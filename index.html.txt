@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Para Morena ✨</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+      touch-action: none;
+      font-family: Arial, sans-serif;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+  const scene = new THREE.Scene();
+
+  const camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+  );
+  camera.position.z = 28;
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  document.body.appendChild(renderer.domElement);
+
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.enableZoom = true;
+  controls.enablePan = false;
+  controls.rotateSpeed = 0.4;
+  controls.zoomSpeed = 0.6;
+
+  scene.add(new THREE.AmbientLight(0xffffff, 1));
+
+  // ESTRELLAS DE FONDO
+  const starsGeometry = new THREE.BufferGeometry();
+  const starsCount = 1200;
+  const positions = [];
+
+  for (let i = 0; i < starsCount; i++) {
+    positions.push(
+      (Math.random() - 0.5) * 400,
+      (Math.random() - 0.5) * 400,
+      (Math.random() - 0.5) * 400
+    );
+  }
+
+  starsGeometry.setAttribute(
+    'position',
+    new THREE.Float32BufferAttribute(positions, 3)
+  );
+
+  const starsMaterial = new THREE.PointsMaterial({
+    color: 0xffffff,
+    size: 1
+  });
+
+  const stars = new THREE.Points(starsGeometry, starsMaterial);
+  scene.add(stars);
+
+  // FUNCIÓN TEXTO
+  function crearTexto(mensaje, x, y, z, tamaño = 42) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 256;
+    const ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = 'rgba(0,0,0,0)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = '#ff8ccf';
+    ctx.font = `bold ${tamaño}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(mensaje, canvas.width / 2, canvas.height / 2);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
+    const sprite = new THREE.Sprite(material);
+
+    sprite.position.set(x, y, z);
+    sprite.scale.set(12, 6, 1);
+    scene.add(sprite);
+  }
+
+  // 💖 TUS MENSAJES
+  crearTexto("Morena, te amo 💖", 0, 8, 0, 48);
+
+  crearTexto("Eres lo mejor que me ha pasado", -14, 4, -6);
+  crearTexto("Eres el amor de mi vida", 14, -2, 6);
+  crearTexto("Soy todo tuyo", -10, -8, 10);
+  crearTexto("Eres muy especial para mí", 10, 9, -10);
+  crearTexto("Disfruta mucho en tu día ✨", 0, -12, -14);
+  crearTexto("Eres hermosa", -18, -1, 2);
+  crearTexto("Eres una mujer maravillosa", 18, 3, -2);
+  crearTexto("No existe ni existirá nadie como vos", 0, 14, -8);
+
+  // ANIMACIÓN
+  function animate() {
+    requestAnimationFrame(animate);
+    stars.rotation.y += 0.0006;
+    controls.update();
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+</script>
+
+</body>
+</html>
